@@ -34,7 +34,7 @@ pip install well-plate
     wp = well_plate.WellPlate(24)
     wp.plot()
 ```
-![well_plate](https://github.com/dylanwal/well_plate/tree/master/examples/well_plate_24.svg)
+![well_plate](https://raw.githubusercontent.com/dylanwal/well_plate/master/examples/well_plate_24.svg)
 
 ```python
     import well_plate
@@ -42,7 +42,7 @@ pip install well-plate
     wp = well_plate.WellPlate(96, "rect")
     wp.plot()
 ```
-![well_plate](https://github.com/dylanwal/well_plate/tree/master/examples/well_plate_96r.svg)
+![well_plate](https://raw.githubusercontent.com/dylanwal/well_plate/master/examples/well_plate_96r.svg)
 
 ```python
     import pandas as pd    
@@ -56,5 +56,5 @@ pip install well-plate
     wp.plot(key="mw_n")
     wp.heatmap(key="mw_n")
 ```
-![well_plate](https://github.com/dylanwal/well_plate/tree/master/examples/well_plate_with_data.svg)
-![well_plate](https://github.com/dylanwal/well_plate/tree/master/examples/heatmap.svg)
+![well_plate](https://raw.githubusercontent.com/dylanwal/well_plate/master/examples/well_plate_with_data.svg)
+![well_plate](https://raw.githubusercontent.com/dylanwal/well_plate/master/examples/heatmap.svg)
