@@ -5,13 +5,10 @@ import well_plate
 
 
 def main():
-    import os
-    print(os.getcwd())
     df = pd.read_csv("example1_data.csv", index_col=0)
     print(df.head())
 
-    wp = well_plate.WellPlate(384)
-
+    wp = well_plate.WellPlate(24)
     wp.plot()
     wp.add_data(df["mw_n"])
     wp.plot(key="mw_n")
