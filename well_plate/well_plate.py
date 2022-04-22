@@ -218,6 +218,7 @@ class WellPlate:
             'zeroline': True,
             'side': "top",
             "dtick": 1,
+            "mirror": True
 
         }
 
