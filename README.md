@@ -14,7 +14,7 @@ Makes nice visualizations of well plates!
 ## Installation
 
 ```
-pip install well-plate
+pip install well_plate
 ```
 
 ## Dependencies
