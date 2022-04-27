@@ -20,7 +20,9 @@ pip install well_plate
 ## Dependencies
 
 [numpy](https://github.com/numpy/numpy)
+
 [pandas](https://github.com/pandas-dev/pandas)
+
 [plotly](https://github.com/plotly/plotly.py)
 
 ---
