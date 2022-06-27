@@ -3,7 +3,7 @@
 ---
 ---
 ![PyPI](https://img.shields.io/pypi/v/well_plate)
-![downloads](https://img.shields.io/pypi/dm/well_plate)
+![downloads](https://static.pepy.tech/badge/well_plate)
 ![license](https://img.shields.io/github/license/dylanwal/well_plate)
 
 Makes nice visualizations of well plates!
