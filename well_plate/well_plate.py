@@ -31,6 +31,7 @@ class WellPlate:
         self.number_wells = number_wells
         self.specs = WELL_PLATE_DATA[number_wells]
         self.shape = shape
+        # self.colorscale = colorscale
 
         self.row_labels = self._get_row_labels()
         self.col_labels = self._get_col_labels()
@@ -74,11 +75,11 @@ class WellPlate:
 
             self.data_dict[index][ser.name] = row
 
-    def plot(self, key: str = None, auto_open: bool = True) -> go.Figure:
+    def plot(self, key: str = None, custom_labels: list = None, color_scale: list[str] = None, auto_open: bool = True) -> go.Figure:
         layout_figure = {
             "autosize": False,
-            "width": int(self.specs["length"] * 10),
-            "height": int(self.specs["width"] * 10),
+            "width": int(self.specs["length"] * 9),
+            "height": int(self.specs["width"] * 9),
             "plot_bgcolor": "white",
             "showlegend": False
         }
@@ -110,10 +111,14 @@ class WellPlate:
         fig = go.Figure()
 
         self._draw_outline(fig)
-        self._draw_labels(fig)
+
+        if custom_labels is None:
+            self._draw_labels(fig)
+        else:
+            self._draw_labels(fig, custom_labels)
 
         if key is not None:
-            self._draw_values(fig, key)
+            self._draw_values(fig, key, color_scale)
         else:
             self._draw_wells(fig)
 
@@ -141,21 +146,26 @@ class WellPlate:
         points = [go.layout.Shape(x0=x - r, y0=y - r, x1=x + r, y1=y + r, **kwargs) for x, y in self.well_positions]
         fig.update_layout(shapes=points)
 
-    def _draw_labels(self, fig: go.Figure):
-        self._draw_letters(fig)
+    def _draw_labels(self, fig: go.Figure, custom_labels=None):
+        self._draw_letters(fig, custom_labels)
         self._draw_numbers(fig)
 
-    def _draw_letters(self, fig: go.Figure):
+    def _draw_letters(self, fig: go.Figure, custom_labels):
         if self.number_wells < 100:
             y = self.specs["width"] - (self.specs["width"] - (
                     self.specs["y_off"] + (self.specs["y_space"] * (self.specs["rows"] - 0.5)))) + 0.5
         else:
             y = self.specs["y_off"] + (self.specs["y_space"] * (self.specs["rows"]))
 
-        for i, label in enumerate(self.col_labels):
+        if custom_labels is None:
+            labels = self.col_labels
+        else:
+            labels = custom_labels
+
+        for i, label in enumerate(labels):
             x = self.specs["x_off"] + self.specs["x_space"] * i
             fig.add_annotation(x=x, y=y, text=f"<b>{label}</b>", showarrow=False,
-                               font={"size": self.specs["font_size"], "family": "Arial", "color": "black"})
+                            font={"size": self.specs["font_size"], "family": "Arial", "color": "black"})
 
     def _draw_numbers(self, fig: go.Figure):
         if self.number_wells < 100:
@@ -167,32 +177,50 @@ class WellPlate:
             fig.add_annotation(x=x, y=y, text=f"<b>{label}</b>", showarrow=False,
                                font={"size": self.specs["font_size"], "family": "Arial", "color": "black"})
 
-    def _draw_values(self, fig: go.Figure, key: str):
+    def _draw_values(self, fig: go.Figure, key: str, colorscale: list[str] = None):
         heat_map_values = flatten_list(self._get_heatmap_values(key))
         min_value = min([v for v in heat_map_values if v is not None])
         max_value = max([v for v in heat_map_values if v is not None])
-        color_map = PlotlyColorMap(min_value, max_value)
+
+        if colorscale is None:
+            color_map = PlotlyColorMap(min_value, max_value)
+        else:
+            color_map = PlotlyColorMap(min_value, max_value, sequential_colorscale=colorscale)
+
         r = self.specs["diameter"] / 2
         kwargs = {'type': self.shape, 'xref': 'x', 'yref': 'y', "line": {"color": "black", "width": 4}}
 
         points = []
         for (x, y), v in zip(self.well_positions, heat_map_values):
-            points.append(go.layout.Shape(x0=x - r, y0=y - r, x1=x + r, y1=y + r, fillcolor=color_map.get(v), **kwargs))
+            points.append(
+                go.layout.Shape(
+                    x0=x - r, y0=y - r, x1=x + r, y1=y + r,
+                    fillcolor=color_map.get(v), **kwargs)
+            )
 
         fig.update_layout(shapes=points)
 
         # add colorbar
-        fig.add_trace(go.Scatter(x=[None], y=[None], mode="markers",
-                                 marker={"colorscale": color_map.colorscale_label, "showscale": True,
-                                         "cmin": min_value, "cmax": max_value,
-                                         "colorbar": {"title": f"<b>{key}</b>",
-                                                      "tickprefix": "<b>", "ticksuffix": "</b>"}}))
+        fig.add_trace(go.Scatter(
+            x=[None], y=[None], mode="markers",
+            marker={"colorscale": color_map.colorscale_label, "showscale": True,
+                    "cmin": min_value, "cmax": max_value,
+                    "colorbar": {"title": f"<b>{key}</b>", "tickformat":"20,.2f",
+                                "tickprefix": "<b>", "ticksuffix": "</b>"}}))
 
-    def heatmap(self, key: str, auto_open: bool = True) -> go.Figure:
-        z = self._get_heatmap_values(key)
+    def heatmap(self, key: str, auto_open: bool = True, custom_labels: list = None, color_scale: list[str] | str = None, text: list[str] = None) -> go.Figure:
+        z = np.flip(np.array(self._get_heatmap_values(key)), axis=0)
 
-        fig = go.Figure(go.Heatmap(
-            x=self.col_labels, y=self.row_labels, z=z, hoverongaps=False
+        fig = go.Figure(
+            data=go.Heatmap(
+                x=self.col_labels if custom_labels is None else custom_labels,
+                y=self.row_labels,
+                z=z,
+                colorscale=color_scale,
+                text=text,
+                texttemplate="%{text}",
+                colorbar={"tickformat":"20,.2f", "tickprefix": "<b>", "ticksuffix": "</b>"},#dict(tickformat="20,.2f"),
+                hoverongaps=False
         ))
 
         layout_figure = {
@@ -218,8 +246,7 @@ class WellPlate:
             'zeroline': True,
             'side': "top",
             "dtick": 1,
-            "mirror": True
-
+            "mirror": True,
         }
 
         layout_yaxis = {
@@ -235,11 +262,15 @@ class WellPlate:
             "gridcolor": 'lightgray',
             'zeroline': True,
             "mirror": True,
+            "autorange":"reversed"
         }
-
+        fig.update_traces(
+            hovertemplate="<b>%{y}%{x}</b><br><br>%{z:20,.2f}<extra></extra>"
+            )
         fig.update_layout(layout_figure)
         fig.update_xaxes(layout_xaxis)
         fig.update_yaxes(layout_yaxis)
+
 
         if auto_open:
             fig.write_html("temp_heatmap.html", auto_open=True)
