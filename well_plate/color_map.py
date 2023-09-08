@@ -15,19 +15,19 @@ class PlotlyColorMap:
 
         https://plotly.com/python/builtin-colorscales/
     """
-    def __init__(self, min_value: float = 0, max_value: int = 1, colorscale_label: str = "viridis",
-                 default_color: str = 'rgb(255,255,255)'):
+    def __init__(self, min_value: float = 0, max_value: int = 1, sequential_colorscale: list[str] = plotly.colors.sequential.YlOrRd,
+                 default_color: str = 'rgb(255,255,255)', colorscale_label: str = "ylorrd"):
 
         self.min_value = min_value
         self.max_value = max_value
         self.colorscale_label = colorscale_label
         self.default_color = default_color
-        self.colorscale = self._get_colorscale()
+        self.colorscale = self._get_colorscale(sequential_colorscale)
 
     @staticmethod
-    def _get_colorscale():
-        viridis_colors, _ = plotly.colors.convert_colors_to_same_type(plotly.colors.sequential.Viridis)
-        return plotly.colors.make_colorscale(viridis_colors)
+    def _get_colorscale(sequential_colorscale):
+        sequential_colors, _ = plotly.colors.convert_colors_to_same_type(sequential_colorscale)
+        return plotly.colors.make_colorscale(sequential_colors)
 
     def _map_value(self, value: float) -> float:
         """ Maps values to [0,1] """
