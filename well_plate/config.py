@@ -12,7 +12,7 @@ WELL_PLATE_DATA = {
         'x_off': 24.75, "y_off": 15.68, "x_space": 26, "y_space": 26,
         "rows": 3, "columns": 4,
         "diameter": 21.9, "depth": 17.5,
-        "font_size": 40
+        "font_size": 35
     },
     24: {
         "width": 85.48, "length": 127.76, "height": 20.20,
@@ -27,7 +27,7 @@ WELL_PLATE_DATA = {
         'x_off': 14.36, "y_off": 11.24, "x_space": 9, "y_space": 9,
         "rows": 8, "columns": 12,
         "diameter": 5.46, "depth": 15.5,
-        "font_size": 30
+        "font_size": 25
     },
     384: {
         "width": 85.48, "length": 127.76, "height": 10.4,
