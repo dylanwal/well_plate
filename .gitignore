@@ -1,0 +1,12 @@
+######################## Folders to ignore ######################
+__pycache__/
+well_plate/
+.ipynb_checkpoints/
+.vscode/
+build/
+dist/
+well_plate.egg-info/
+
+######################## Files to ignore ########################
+.DS_Store
+serve_application.sh
