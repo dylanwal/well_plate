@@ -1,3 +1,4 @@
+from typing import Union
 import string
 
 import numpy as np
@@ -208,7 +209,7 @@ class WellPlate:
                     "colorbar": {"title": f"<b>{key}</b>", "tickformat":"20,.2f",
                                 "tickprefix": "<b>", "ticksuffix": "</b>"}}))
 
-    def heatmap(self, key: str, auto_open: bool = True, custom_labels: list = None, color_scale: list[str] | str = None, text: list[str] = None) -> go.Figure:
+    def heatmap(self, key: str, auto_open: bool = True, custom_labels: list = None, color_scale: Union[list[str], str] = None, text: list[str] = None) -> go.Figure:
         z = np.flip(np.array(self._get_heatmap_values(key)), axis=0)
 
         fig = go.Figure(
